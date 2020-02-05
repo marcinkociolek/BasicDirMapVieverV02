@@ -29,13 +29,21 @@ SOURCES += \
         mainwindow.cpp\
         ../../ProjectsLib/LibMarcin/DispLib.cpp \
         ../../ProjectsLib/LibMarcin/StringFcLib.cpp \
-        ../../ProjectsLib/LibMarcin/RegionU16Lib.cpp
+        ../../ProjectsLib/LibMarcin/RegionU16Lib.cpp\
+        ../../ProjectsLib/LibMarcin/tileparams.cpp  \
+        ../../ProjectsLib/LibMarcin/dirdetectionparams.cpp \
+        ../../ProjectsLib/LibMarcin/NormalizationLib.cpp \
+        ../../ProjectsLib/LibMarcin/displayfordirdetection.cpp
 
 HEADERS += \
         mainwindow.h\
         ../../ProjectsLib/LibMarcin/DispLib.h \
         ../../ProjectsLib/LibMarcin/StringFcLib.h \
-        ../../ProjectsLib/LibMarcin/RegionU16Lib.h
+        ../../ProjectsLib/LibMarcin/RegionU16Lib.h\
+        ../../ProjectsLib/LibMarcin/tileparams.h \
+        ../../ProjectsLib/LibMarcin/dirdetectionparams.h \
+        ../../ProjectsLib/LibMarcin/NormalizationLib.h \
+        ../../ProjectsLib/LibMarcin/displayfordirdetection.h
 
 FORMS += \
         mainwindow.ui
