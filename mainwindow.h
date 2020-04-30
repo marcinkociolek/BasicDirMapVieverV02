@@ -44,6 +44,28 @@ private slots:
 
     void on_pushButtonSF_clicked();
 
+    void on_checkBoxShowSudoColor_toggled(bool checked);
+
+    void on_comboBoxDisplayRange_currentIndexChanged(int index);
+
+    void on_doubleSpinBoxImMin_valueChanged(double arg1);
+
+    void on_doubleSpinBoxImMax_valueChanged(double arg1);
+
+    void on_doubleSpinBoxDirectionLineLenght_valueChanged(double arg1);
+
+    void on_spinBoxDirectionLineWidth_valueChanged(int arg1);
+
+    void on_spinBoxShapeLineWidth_valueChanged(int arg1);
+
+    void on_checkBoxShowSape_toggled(bool checked);
+
+    void on_checkBoxShowDirection_toggled(bool checked);
+
+    void on_spinBoxScalePower_valueChanged(int arg1);
+
+    void on_spinBoxScaleBase_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 };

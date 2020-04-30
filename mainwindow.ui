@@ -49,7 +49,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>I:\DL_training_images_1</string>
+      <string>D:\Data\Test images\Dziwne</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButtonOpenDirectionFolder">
@@ -101,7 +101,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>I:\DL_training_images_1</string>
+      <string>D:\Data\Test images\Dziwne</string>
      </property>
     </widget>
    </widget>

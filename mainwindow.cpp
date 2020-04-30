@@ -195,6 +195,8 @@ void MainWindow::ShowImage()
     case 3:
         NormParams1to99perc(ImIn, &maxIm, &minIm);
         break;
+    default:
+        break;
     }
 
     double directionLineLenght = ui->doubleSpinBoxDirectionLineLenght->value();
@@ -449,4 +451,59 @@ void MainWindow::on_pushButtonSF_clicked()
     ui->textEditOut->append("errorCount: " + QString::number(errorCount));
 
     //ui->textEditOut->append(QString::fromStdString(LocalFileName + " ->" + outStr + " ->" + to_string(dir)));
+}
+
+void MainWindow::on_checkBoxShowSudoColor_toggled(bool checked)
+{
+    ShowImage();
+}
+
+void MainWindow::on_comboBoxDisplayRange_currentIndexChanged(int index)
+{
+    ShowImage();
+}
+
+void MainWindow::on_doubleSpinBoxImMin_valueChanged(double arg1)
+{
+    ShowImage();
+}
+
+void MainWindow::on_doubleSpinBoxImMax_valueChanged(double arg1)
+{
+    ShowImage();
+}
+
+void MainWindow::on_doubleSpinBoxDirectionLineLenght_valueChanged(double arg1)
+{
+    ShowImage();
+}
+
+void MainWindow::on_spinBoxDirectionLineWidth_valueChanged(int arg1)
+{
+    ShowImage();
+}
+
+void MainWindow::on_spinBoxShapeLineWidth_valueChanged(int arg1)
+{
+    ShowImage();
+}
+
+void MainWindow::on_checkBoxShowSape_toggled(bool checked)
+{
+    ShowImage();
+}
+
+void MainWindow::on_checkBoxShowDirection_toggled(bool checked)
+{
+    ShowImage();
+}
+
+void MainWindow::on_spinBoxScalePower_valueChanged(int arg1)
+{
+    ShowImage();
+}
+
+void MainWindow::on_spinBoxScaleBase_valueChanged(int arg1)
+{
+    ShowImage();
 }
