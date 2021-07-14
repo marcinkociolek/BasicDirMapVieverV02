@@ -49,7 +49,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>D:\Data\Test images\Dziwne</string>
+      <string>/media/marcin/Data/TestDataFromPickle/Out</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButtonOpenDirectionFolder">
@@ -101,7 +101,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>D:\Data\Test images\Dziwne</string>
+      <string>/media/marcin/Data/TestDataFromPickle</string>
      </property>
     </widget>
    </widget>
@@ -130,7 +130,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>.+.tif</string>
+      <string>.+.tiff</string>
      </property>
     </widget>
     <widget class="QListWidget" name="listWidgetImageFiles">
@@ -597,7 +597,7 @@
      <x>0</x>
      <y>0</y>
      <width>1054</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>

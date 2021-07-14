@@ -21,8 +21,8 @@
 #include "RegionU16Lib.h"
 #include "StringFcLib.h"
 
-#include "mazdaroi.h"
-#include "mazdaroiio.h"
+//#include "mazdaroi.h"
+//#include "mazdaroiio.h"
 
 #include <tiffio.h>
 
@@ -76,6 +76,68 @@ void ShowShape(Mat ImShow, int x,int y, int tileShape, int tileSize, int tileLin
     }
 }
 //------------------------------------------------------------------------------------------------------------------------------
+vector<int> GetDirFromFile(boost::filesystem::path FileToOpen, int firstDataLine = 1, int dirColumn = 3)
+{
+    vector<int> directionsVect;
+
+    //check if file exists
+    if (!exists(FileToOpen))
+        return directionsVect;
+
+    std::ifstream inFile(FileToOpen.string());
+    if (!inFile.is_open())
+    {
+        return directionsVect;
+    }
+    //goto first dala line
+    int lineNr = 0;
+    std::string Line;
+    while(inFile.good() && lineNr < firstDataLine)
+    {
+        getline(inFile, Line);
+        lineNr++;
+    }
+
+//read directionalities
+    while(inFile.good())
+    {
+        std::string Line2;
+        lineNr++;
+        if(lineNr == 363)
+        {
+            int a = 1;
+            int b = a+1;
+        }
+
+        getline(inFile,Line2);
+
+        if(Line2 == "")
+            break;
+
+
+        std::stringstream InStringStream(Line2);
+
+        std::string subStr;
+
+        int column = 0;
+
+        while(InStringStream >> subStr && column < dirColumn)
+        {
+
+            column++;
+        }
+        InStringStream >> subStr;
+
+        if(subStr == "NAN")
+            directionsVect.push_back(-1000);
+        else
+            directionsVect.push_back(stoi(subStr));
+    }
+    inFile.close();
+    return directionsVect;
+}
+//-----------------------------------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------------------------------------------------------
 //          constructor Destructor
 //------------------------------------------------------------------------------------------------------------------------------
@@ -357,7 +419,6 @@ void MainWindow::on_listWidgetDirectionFiles_currentTextChanged(const QString &c
     }
     path DirectionFileToOpen = DirectionsFolderPath;
     DirectionFileToOpen.append(FileNameQStr.toStdWString());
-
     InFileParams.GetFromFile(DirectionFileToOpen);
 
 
@@ -380,7 +441,7 @@ void MainWindow::on_listWidgetDirectionFiles_currentTextChanged(const QString &c
     ImageFileToOpen.append(FileNameQStr.toStdWString());
     ImageFileToOpen.replace_extension();
 
-    ImIn = imread(ImageFileToOpen.string(),CV_LOAD_IMAGE_ANYDEPTH);
+    ImIn = imread(ImageFileToOpen.string(),cv::IMREAD_ANYDEPTH);
     if(ImIn.empty())
     {
         ui->textEditOut->append("image : " + QString::fromStdString(ImageFileToOpen.string()) + "can not be opened");
@@ -394,60 +455,69 @@ void MainWindow::on_pushButtonSF_clicked()
 {
 
 
-    int size = ui->listWidgetDirectionFiles->count();// FileParVect.size();
+    int size = ui->listWidgetImageFiles->count();// FileParVect.size();
 
-    double mrse;
+    double rmse;
     double maxError = 0.0;
     int count = 0;
     int errorCount = 0;
     double sumSquareError = 0.0;
     for(int i = 0; i< size; i++)
     {
-        string LocalFileName = ui->listWidgetDirectionFiles->item(i)->text().toStdString();
-        string outStr = regex_replace(LocalFileName, regex(".+n"), "");
-        double FileDirection = stod(outStr) + 90;
-        if(FileDirection > 180)
-            FileDirection = FileDirection - 180;
+        path ImageFilename(ui->lineEditImageFolder->text().toStdWString());
+        path EstimatedDirectionFilename(ui->lineEditDirectionFolder->text().toStdWString());
+        path TrueDirectionFilename(ui->lineEditImageFolder->text().toStdWString());
 
+        ImageFilename.append(ui->listWidgetImageFiles->item(i)->text().toStdString());
 
+        string LocalFileName = ImageFilename.stem().string();
 
-        FileParams LocalFileParams;
-        path directionFilename(ui->lineEditDirectionFolder->text().toStdString());
-        directionFilename.append(LocalFileName);
-        LocalFileParams.GetFromFile(directionFilename);
-        size_t tileCount = LocalFileParams.ParamsVect.size();
-        for(size_t k = 0; k < tileCount; k++)
+        EstimatedDirectionFilename.append(LocalFileName + ".tiff.txt");
+        TrueDirectionFilename.append(LocalFileName + "info.txt");
+
+        vector<int> trueDirVect = GetDirFromFile(TrueDirectionFilename,1,2);
+
+        vector<int> estDirVect = GetDirFromFile(EstimatedDirectionFilename,37,1);
+
+        if(trueDirVect.size() == estDirVect.size())
         {
-            double TileDirection = LocalFileParams.ParamsVect[k].Params[0];
-            double difference;
-            if(TileDirection < FileDirection)
-                difference = FileDirection - TileDirection;
-            else
-                difference = TileDirection - FileDirection;
-
-            if(difference > 90)
-                difference = 180 - difference;
-
-            if(difference > 0)
+            size_t vectSize = trueDirVect.size();
+            for(size_t k = 0; k < vectSize; k++)
             {
-                errorCount++;
-                ui->textEditOut->append(QString::fromStdString(directionFilename.stem().string()) + " " +
-                                        QString::number(LocalFileParams.ParamsVect[k].tileX) + " " +
-                                        QString::number(LocalFileParams.ParamsVect[k].tileY));
+
+                double difference;
+                double trueDirection = trueDirVect[k] - 90;
+                if (trueDirection < 0)
+                    trueDirection += 180;
+                double estDirection = estDirVect[k];
+                if(trueDirection > estDirection)
+                    difference = trueDirection - estDirection;
+                else
+                    difference = estDirection - trueDirection;
+
+                if(difference > 90)
+                    difference = 180 - difference;
+
+                if(difference > 0)
+                {
+                    errorCount++;
+                }
+
+                if(maxError < difference)
+                    maxError = difference;
+                count++;
+
+                sumSquareError += difference * difference;
             }
 
-            if(maxError < difference)
-                maxError = difference;
-            count++;
-
-            sumSquareError += difference * difference;
         }
+
     }
     ui->textEditOut->append("size: " + QString::number(size));
     ui->textEditOut->append("count: " + QString::number(count));
     ui->textEditOut->append("max error: " + QString::number(maxError));
     ui->textEditOut->append("sum Sq Error: " + QString::number(sumSquareError));
-    ui->textEditOut->append("MRSE: " + QString::number(sumSquareError/count));
+    ui->textEditOut->append("RMSE: " + QString::number(sumSquareError/count));
     ui->textEditOut->append("errorCount: " + QString::number(errorCount));
 
     //ui->textEditOut->append(QString::fromStdString(LocalFileName + " ->" + outStr + " ->" + to_string(dir)));
