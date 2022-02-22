@@ -66,6 +66,8 @@ private slots:
 
     void on_spinBoxScaleBase_valueChanged(int arg1);
 
+    void on_pushButtonSF2_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

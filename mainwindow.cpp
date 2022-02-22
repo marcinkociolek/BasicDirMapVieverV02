@@ -137,7 +137,40 @@ vector<int> GetDirFromFile(boost::filesystem::path FileToOpen, int firstDataLine
     return directionsVect;
 }
 //-----------------------------------------------------------------------------------------------------------
+String GerTextStartingFromLine(boost::filesystem::path FileToOpen, int firstDataLine = 0)
+{
+    String OutStr;
+    //check if file exists
+    if(!exists( FileToOpen))
+        return OutStr;
 
+    std::ifstream inFile(FileToOpen.string());
+    if(!inFile.is_open())
+        return OutStr;
+
+    //goto first dala line
+    int lineNr = 0;
+    std::string Line;
+    while(inFile.good() && lineNr <= firstDataLine)
+    {
+        getline(inFile, Line);
+        lineNr++;
+    }
+
+    //read lines
+    while(inFile.good())
+    {
+        //std::string Line2;
+        lineNr++;
+        getline(inFile,Line);
+        if(Line == "")
+            break;
+        OutStr += Line;
+    }
+    inFile.close();
+
+    return OutStr;
+}
 //------------------------------------------------------------------------------------------------------------------------------
 //          constructor Destructor
 //------------------------------------------------------------------------------------------------------------------------------
@@ -462,6 +495,25 @@ void MainWindow::on_pushButtonSF_clicked()
     int count = 0;
     int errorCount = 0;
     double sumSquareError = 0.0;
+
+    double sumSquareError0 = 0.0;
+    double sumSquareError2000 = 0.0;
+    double sumSquareError4000 = 0.0;
+    double sumSquareError6000 = 0.0;
+    double sumSquareError8000 = 0.0;
+    double sumSquareError3 = 0.0;
+    double sumSquareError5 = 0.0;
+    double sumSquareError7 = 0.0;
+    double sumSquareError9 = 0.0;
+    int count0 = 0;
+    int count2000 = 0;
+    int count4000 = 0;
+    int count6000 = 0;
+    int count8000 = 0;
+    int count3 = 0;
+    int count5 = 0;
+    int count7 = 0;
+    int count9 = 0;
     for(int i = 0; i< size; i++)
     {
         path ImageFilename(ui->lineEditImageFolder->text().toStdWString());
@@ -476,8 +528,11 @@ void MainWindow::on_pushButtonSF_clicked()
         TrueDirectionFilename.append(LocalFileName + "info.txt");
 
         vector<int> trueDirVect = GetDirFromFile(TrueDirectionFilename,1,2);
-
+        vector<int> barWidthVect = GetDirFromFile(TrueDirectionFilename,1,3);
+        vector<int> barFreqVect = GetDirFromFile(TrueDirectionFilename,1,4);
+        vector<int> distortionVect = GetDirFromFile(TrueDirectionFilename,1,5);
         vector<int> estDirVect = GetDirFromFile(EstimatedDirectionFilename,37,1);
+
 
         if(trueDirVect.size() == estDirVect.size())
         {
@@ -506,8 +561,52 @@ void MainWindow::on_pushButtonSF_clicked()
                 if(maxError < difference)
                     maxError = difference;
                 count++;
-
                 sumSquareError += difference * difference;
+                if(distortionVect[k] == 0)
+                {
+                    count0++;
+                    sumSquareError0 += difference * difference;
+                }
+                if(distortionVect[k] == 2000)
+                {
+                    count2000++;
+                    sumSquareError2000 += difference * difference;
+                }
+                if(distortionVect[k] == 4000)
+                {
+                    count4000++;
+                    sumSquareError4000 += difference * difference;
+                }
+                if(distortionVect[k] == 6000)
+                {
+                    count6000++;
+                    sumSquareError6000 += difference * difference;
+                }
+                if(distortionVect[k] == 8000)
+                {
+                    count8000++;
+                    sumSquareError8000 += difference * difference;
+                }
+                if(distortionVect[k] == 3)
+                {
+                    count3++;
+                    sumSquareError3 += difference * difference;
+                }
+                if(distortionVect[k] == 5)
+                {
+                    count5++;
+                    sumSquareError5 += difference * difference;
+                }
+                if(distortionVect[k] == 7)
+                {
+                    count7++;
+                    sumSquareError7 += difference * difference;
+                }
+                if(distortionVect[k] == 9)
+                {
+                    count9++;
+                    sumSquareError9 += difference * difference;
+                }
             }
 
         }
@@ -517,8 +616,31 @@ void MainWindow::on_pushButtonSF_clicked()
     ui->textEditOut->append("count: " + QString::number(count));
     ui->textEditOut->append("max error: " + QString::number(maxError));
     ui->textEditOut->append("sum Sq Error: " + QString::number(sumSquareError));
-    ui->textEditOut->append("RMSE: " + QString::number(sumSquareError/count));
+    ui->textEditOut->append("RMSE: " + QString::number(sqrt(sumSquareError/count)));
     ui->textEditOut->append("errorCount: " + QString::number(errorCount));
+
+    ui->textEditOut->append("count0: " + QString::number(count0));
+    ui->textEditOut->append("RMSE0: " + QString::number(sqrt(sumSquareError0/count0)));
+    ui->textEditOut->append("count2000: " + QString::number(count2000));
+    ui->textEditOut->append("RMSE2000: " + QString::number(sqrt(sumSquareError2000/count2000)));
+    ui->textEditOut->append("count4000: " + QString::number(count4000));
+    ui->textEditOut->append("RMSE4000: " + QString::number(sqrt(sumSquareError4000/count4000)));
+    ui->textEditOut->append("count6000: " + QString::number(count6000));
+    ui->textEditOut->append("RMSE6000: " + QString::number(sqrt(sumSquareError6000/count6000)));
+    ui->textEditOut->append("count8000: " + QString::number(count8000));
+    ui->textEditOut->append("RMSE8000: " + QString::number(sqrt(sumSquareError8000/count8000)));
+    ui->textEditOut->append("count3: " + QString::number(count3));
+    ui->textEditOut->append("RMSE3: " + QString::number(sqrt(sumSquareError3/count3)));
+    ui->textEditOut->append("count5: " + QString::number(count5));
+    ui->textEditOut->append("RMSE5: " + QString::number(sqrt(sumSquareError5/count5)));
+    ui->textEditOut->append("count7: " + QString::number(count7));
+    ui->textEditOut->append("RMSE7: " + QString::number(sqrt(sumSquareError7/count7)));
+    ui->textEditOut->append("count9: " + QString::number(count9));
+    ui->textEditOut->append("RMSE9: " + QString::number(sqrt(sumSquareError9/count9)));
+
+
+
+
 
     //ui->textEditOut->append(QString::fromStdString(LocalFileName + " ->" + outStr + " ->" + to_string(dir)));
 }
@@ -576,4 +698,187 @@ void MainWindow::on_spinBoxScalePower_valueChanged(int arg1)
 void MainWindow::on_spinBoxScaleBase_valueChanged(int arg1)
 {
     ShowImage();
+}
+
+void MainWindow::on_pushButtonSF2_clicked()
+{
+/*
+    String OutStr;
+    int size = ui->listWidgetDirectionFiles->count();// FileParVect.size();
+    int count = 0;
+
+    path EstimatedDirectionFilename(ui->lineEditDirectionFolder->text().toStdWString());
+
+    ImageFilename.append(ui->listWidgetImageFiles->item(i)->text().toStdString());
+
+    string LocalFileName = ImageFilename.stem().string();
+
+    EstimatedDirectionFilename.append(LocalFileName + ".tiff.txt");
+    TrueDirectionFilename.append(LocalFileName + "info.txt");
+
+
+
+
+    for(int i = 0; i< size; i++)
+    {
+        path EstimatedDirectionFilename(ui->lineEditDirectionFolder->text().toStdWString());
+
+        string LocalFileName = ImageFilename.stem().string();
+
+        EstimatedDirectionFilename.append(LocalFileName + ".tiff.txt");
+
+        vector<int> estDirVect = GetDirFromFile(EstimatedDirectionFilename,37,1);
+
+        //check if file exists
+        if(exists(EstimatedDirectionFilename))
+        {
+            std::ifstream inFile(FileToOpen.string());
+            if (inFile.is_open())
+            {
+                //goto first dala line
+                int lineNr = 0;
+                std::string Line;
+                while(inFile.good() && lineNr < firstDataLine)
+                {
+                    getline(inFile, Line);
+                    lineNr++;
+                }
+            //read directionalities
+                while(inFile.good())
+                {
+                    //std::string Line2;
+                    lineNr++;
+                    getline(inFile,Line);
+                    if(Line2 == "")
+                        break;
+                    OutStr += Line;
+                }
+                inFile.close();
+
+            }
+            return directionsVect;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if(trueDirVect.size() == estDirVect.size())
+        {
+            size_t vectSize = trueDirVect.size();
+            for(size_t k = 0; k < vectSize; k++)
+            {
+
+                double difference;
+                double trueDirection = trueDirVect[k] - 90;
+                if (trueDirection < 0)
+                    trueDirection += 180;
+                double estDirection = estDirVect[k];
+                if(trueDirection > estDirection)
+                    difference = trueDirection - estDirection;
+                else
+                    difference = estDirection - trueDirection;
+
+                if(difference > 90)
+                    difference = 180 - difference;
+
+                if(difference > 0)
+                {
+                    errorCount++;
+                }
+
+                if(maxError < difference)
+                    maxError = difference;
+                count++;
+                sumSquareError += difference * difference;
+                if(distortionVect[k] == 0)
+                {
+                    count0++;
+                    sumSquareError0 += difference * difference;
+                }
+                if(distortionVect[k] == 2000)
+                {
+                    count2000++;
+                    sumSquareError2000 += difference * difference;
+                }
+                if(distortionVect[k] == 4000)
+                {
+                    count4000++;
+                    sumSquareError4000 += difference * difference;
+                }
+                if(distortionVect[k] == 6000)
+                {
+                    count6000++;
+                    sumSquareError6000 += difference * difference;
+                }
+                if(distortionVect[k] == 8000)
+                {
+                    count8000++;
+                    sumSquareError8000 += difference * difference;
+                }
+                if(distortionVect[k] == 3)
+                {
+                    count3++;
+                    sumSquareError3 += difference * difference;
+                }
+                if(distortionVect[k] == 5)
+                {
+                    count5++;
+                    sumSquareError5 += difference * difference;
+                }
+                if(distortionVect[k] == 7)
+                {
+                    count7++;
+                    sumSquareError7 += difference * difference;
+                }
+                if(distortionVect[k] == 9)
+                {
+                    count9++;
+                    sumSquareError9 += difference * difference;
+                }
+            }
+
+        }
+
+    }
+    ui->textEditOut->append("size: " + QString::number(size));
+    ui->textEditOut->append("count: " + QString::number(count));
+    ui->textEditOut->append("max error: " + QString::number(maxError));
+    ui->textEditOut->append("sum Sq Error: " + QString::number(sumSquareError));
+    ui->textEditOut->append("RMSE: " + QString::number(sqrt(sumSquareError/count)));
+    ui->textEditOut->append("errorCount: " + QString::number(errorCount));
+
+    ui->textEditOut->append("count0: " + QString::number(count0));
+    ui->textEditOut->append("RMSE0: " + QString::number(sqrt(sumSquareError0/count0)));
+    ui->textEditOut->append("count2000: " + QString::number(count2000));
+    ui->textEditOut->append("RMSE2000: " + QString::number(sqrt(sumSquareError2000/count2000)));
+    ui->textEditOut->append("count4000: " + QString::number(count4000));
+    ui->textEditOut->append("RMSE4000: " + QString::number(sqrt(sumSquareError4000/count4000)));
+    ui->textEditOut->append("count6000: " + QString::number(count6000));
+    ui->textEditOut->append("RMSE6000: " + QString::number(sqrt(sumSquareError6000/count6000)));
+    ui->textEditOut->append("count8000: " + QString::number(count8000));
+    ui->textEditOut->append("RMSE8000: " + QString::number(sqrt(sumSquareError8000/count8000)));
+    ui->textEditOut->append("count3: " + QString::number(count3));
+    ui->textEditOut->append("RMSE3: " + QString::number(sqrt(sumSquareError3/count3)));
+    ui->textEditOut->append("count5: " + QString::number(count5));
+    ui->textEditOut->append("RMSE5: " + QString::number(sqrt(sumSquareError5/count5)));
+    ui->textEditOut->append("count7: " + QString::number(count7));
+    ui->textEditOut->append("RMSE7: " + QString::number(sqrt(sumSquareError7/count7)));
+    ui->textEditOut->append("count9: " + QString::number(count9));
+    ui->textEditOut->append("RMSE9: " + QString::number(sqrt(sumSquareError9/count9)));
+
+
+
+
+
+    //ui->textEditOut->append(QString::fromStdString(LocalFileName + " ->" + outStr + " ->" + to_string(dir)));
+*/
 }
